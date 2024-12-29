@@ -1,4 +1,5 @@
 from typing import Annotated
+import math
 
 from fastapi import APIRouter, HTTPException, Request, Query
 from fastapi.templating import Jinja2Templates
@@ -48,7 +49,8 @@ def do_the_thing(video_id: str) -> list[str]:
                 group.append(maybe_next_line_text)
                 i += 1
 
-        grouped_lines.append(" ".join(group))
+        formatted_time = f"{math.floor(start / 60)}:{round(start % 60)}"
+        grouped_lines.append({"time": start, "formattedTime": formatted_time, "text": " ".join(group)})
         i += 1
 
     used_lines = []
@@ -57,7 +59,7 @@ def do_the_thing(video_id: str) -> list[str]:
     process_lines = []
 
     for line in grouped_lines:
-        words = line.split()
+        words = line.get("text", "").split()
         should_use = False
         for word in words:
             if word in usage_key_words:

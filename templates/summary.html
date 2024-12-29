@@ -2,25 +2,22 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Video Summary</title>
+    <title>visum | summary</title>
   </head>
   <body style="display: flex; flex-direction: column; align-items: center">
-    <iframe
-      width="560"
-      height="315"
-      src="https://www.youtube.com/embed/{{ video_id }}"
-      title="YouTube video player"
-      frameborder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      referrerpolicy="strict-origin-when-cross-origin"
-      allowfullscreen
-    ></iframe>
+    <div id="player"></div>
     <div style="display: flex; width: 100%; flex-direction: row">
       <div>
         <h3>Tools</h3>
         <ul>
           {% for item in summary.get("tools", []) %}
-          <li>{{ item }}</li>
+          <li>
+            <a
+              href="#{{ item.get('time') }}"
+              onclick="seekTo({{ item.get('time') }})"
+              >({{ item.get("formattedTime") }})</a
+            >: {{ item.get("text") }}
+          </li>
           {% endfor %}
         </ul>
       </div>
@@ -28,10 +25,48 @@
         <h3>Steps</h3>
         <ol>
           {% for item in summary.get("steps", []) %}
-          <li>{{ item }}</li>
+          <li>
+            <a
+              href="#{{ item.get('time') }}"
+              onclick="seekTo({{ item.get('time') }})"
+              >({{ item.get("formattedTime") }})</a
+            >: {{ item.get("text") }}
+          </li>
           {% endfor %}
         </ol>
       </div>
     </div>
+
+    <script>
+      // https://developers.google.com/youtube/iframe_api_reference#Getting_Started
+      var tag = document.createElement("script");
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player("player", {
+          height: "315",
+          width: "560",
+          videoId: "{{ video_id }}",
+          playerVars: {
+            playsinline: 1,
+          },
+          events: {
+            onReady: onPlayerReady,
+          },
+        });
+      }
+
+      function onPlayerReady(event) {
+        event.target.playVideo();
+      }
+
+      function seekTo(time = 0) {
+        player.seekTo(time);
+      }
+    </script>
   </body>
 </html>
