@@ -1,9 +1,11 @@
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi.templating import Jinja2Templates
 from youtube_transcript_api import YouTubeTranscriptApi
 
 router = APIRouter(prefix="/summary")
+templates = Jinja2Templates(directory="templates")
 
 usage_key_words = {"need", "using", "use", "have"}
 tool_key_words = {"tool", "ratchet", "millimeter",
@@ -80,8 +82,10 @@ def do_the_thing(video_id: str) -> list[str]:
 
 
 @router.get("/")
-def summarize(v: Annotated[str | None, Query(example="-qbqWL7aP_g", description="YouTube video ID", min_length=1)] = None):
+def summarize(request: Request, v: Annotated[str | None, Query(example="-qbqWL7aP_g", description="YouTube video ID", min_length=1)] = None):
     if v is None or len(v) == 0:
         raise HTTPException(status_code=400, detail="Invalid video ID")
 
-    return do_the_thing(v)
+    summary = do_the_thing(v)
+
+    return templates.TemplateResponse(request=request, name="summary.html", context={"video_id": v, "summary": summary})

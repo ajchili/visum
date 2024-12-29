@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Video Embed Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <!-- From YouTube Share -->
+    <iframe
+      width="560"
+      height="315"
+      src="https://www.youtube.com/embed/-qbqWL7aP_g?si=Ew9WUKm_EGrlNR7z"
+      title="YouTube video player"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen
+    ></iframe>
+
+    <!-- Test HTML -->
+    <iframe
+      width="560"
+      height="315"
+      src="https://www.youtube.com/embed/-qbqWL7aP_g"
+      title="YouTube video player"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen
+    ></iframe>
+
+    <script>
+      // Test JS
+      const iframe = document.createElement("iframe");
+      iframe.width = 560;
+      iframe.height = 315;
+      iframe.src = "https://www.youtube.com/embed/-qbqWL7aP_g";
+      iframe.title = "YouTube video player";
+      iframe.frameBorder = 0;
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      iframe.referrerpolicy = "strict-origin-when-cross-origin";
+      iframe.allowFullscreen = true;
+
+      document.body.appendChild(iframe);
+    </script>
+  </body>
+</html>
