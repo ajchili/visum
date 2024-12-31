@@ -1,9 +1,10 @@
 from typing import Annotated
-import math
 
 from fastapi import APIRouter, HTTPException, Request, Query
 from fastapi.templating import Jinja2Templates
-from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled
+
+from ..utils import format_time
 
 router = APIRouter(prefix="/summary")
 templates = Jinja2Templates(directory="templates")
@@ -16,7 +17,10 @@ process_key_words = {"started", "remove", "disconnect",
 
 
 def do_the_thing(video_id: str) -> list[str]:
-    transcript = YouTubeTranscriptApi.get_transcript(video_id)
+    try:
+        transcript = YouTubeTranscriptApi.get_transcript(video_id)
+    except TranscriptsDisabled as e:
+        raise e
 
     grouped_lines = []
     transcript_len = len(transcript)
@@ -49,8 +53,9 @@ def do_the_thing(video_id: str) -> list[str]:
                 group.append(maybe_next_line_text)
                 i += 1
 
-        formatted_time = f"{math.floor(start / 60)}:{round(start % 60)}"
-        grouped_lines.append({"time": start, "formattedTime": formatted_time, "text": " ".join(group)})
+        formatted_time = format_time(start)
+        grouped_lines.append(
+            {"time": start, "formattedTime": formatted_time, "text": " ".join(group)})
         i += 1
 
     used_lines = []
@@ -88,6 +93,9 @@ def summarize(request: Request, v: Annotated[str | None, Query(example="-qbqWL7a
     if v is None or len(v) == 0:
         raise HTTPException(status_code=400, detail="Invalid video ID")
 
-    summary = do_the_thing(v)
+    try:
+        summary = do_the_thing(v)
 
-    return templates.TemplateResponse(request=request, name="summary.html", context={"video_id": v, "summary": summary})
+        return templates.TemplateResponse(request=request, name="summary.html", context={"video_id": v, "summary": summary}, headers={"Cache-Control": "max-age=604800"})
+    except TranscriptsDisabled as e:
+        return HTTPException(status_code=400, detail=f"No subtitles exist for video {e.video_id}, cannot generate summary!")
