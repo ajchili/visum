@@ -1,14 +1,25 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="UTF-8" />
-	<title>visum</title>
-</head>
-<body>
-	<form action="/summary" method="get" style="display: flex; flex-direction: column; align-items: center; width: 100%; gap: 1rem;">
-		<label for="video">Video ID</label>
-		<input name="v" id="video" placeholder="-qbqWL7aP_g" />
-		<button>Summarize</button>
-	</form>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>visum</title>
+    <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet" />
+  </head>
+  <body>
+    <form
+      action="/summary"
+      method="get"
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: 1rem;
+      "
+    >
+      <label for="video">Video ID</label>
+      <input name="v" id="video" placeholder="-qbqWL7aP_g" />
+      <button>Summarize</button>
+    </form>
+  </body>
 </html>
